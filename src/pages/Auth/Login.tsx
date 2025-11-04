@@ -1,47 +1,60 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
-import { Button } from '../../components/ui/Button';
-import { Input } from '../../components/ui/Input';
-import { Card } from '../../components/ui/Card';
-import toast from 'react-hot-toast';
-import { useAuthStore } from '../../store/authStore';
+import React, { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
+import { Mail, Lock, Eye, EyeOff } from 'lucide-react'
+import { Button } from '../../components/ui/Button'
+import { Input } from '../../components/ui/Input'
+import { Card } from '../../components/ui/Card'
+import toast from 'react-hot-toast'
+import { useAuthStore } from '../../store/authStore'
+import { supabase } from '../../lib/supabase'  // add this
 
 export const Login: React.FC = () => {
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     email: '',
     password: ''
-  });
-  const navigate = useNavigate();
-  const { setUser } = useAuthStore();
+  })
+  const navigate = useNavigate()
+  const { setUser } = useAuthStore()
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+    e.preventDefault()
+    setLoading(true)
 
-    try {
-      // Simulate login - create mock user
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const mockUser = {
-        id: '1',
-        email: formData.email,
-        username: 'demo-user',
-        created_at: new Date().toISOString()
-      };
-      
-      setUser(mockUser);
-      toast.success('Welcome back!');
-      navigate('/editor');
-    } catch (error) {
-      toast.error('Login failed. Please try again.');
-    } finally {
-      setLoading(false);
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: formData.email,
+      password: formData.password
+    })
+
+    if (error) {
+      toast.error(error.message)
+      setLoading(false)
+      return
     }
-  };
+
+    if (!data?.user) {
+  toast.error('No user found')
+  setLoading(false)
+  return
+}
+
+// TypeScript now knows user exists
+const user = data.user
+
+setUser({
+  id: user.id,
+  email: user.email ?? '',
+  username: user.user_metadata?.username ?? user.email?.split('@')[0] ?? 'user',
+  created_at: user.created_at
+})
+
+
+    toast.success('Welcome back!')
+    navigate('/editor')
+    setLoading(false)
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-emerald-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -97,19 +110,14 @@ export const Login: React.FC = () => {
               </Link>
             </div>
 
-            <Button
-              type="submit"
-              className="w-full"
-              size="lg"
-              disabled={loading}
-            >
+            <Button type="submit" className="w-full" size="lg" disabled={loading}>
               {loading ? 'Signing In...' : 'Sign In'}
             </Button>
           </form>
 
           <div className="mt-6 text-center">
             <p className="text-gray-600">
-              Don't have an account?{' '}
+              Don’t have an account?{' '}
               <Link to="/signup" className="font-medium text-blue-600 hover:text-blue-500">
                 Sign up for free
               </Link>
@@ -118,5 +126,5 @@ export const Login: React.FC = () => {
         </Card>
       </motion.div>
     </div>
-  );
-};
+  )
+}

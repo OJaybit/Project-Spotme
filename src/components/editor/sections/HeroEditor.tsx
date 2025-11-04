@@ -123,6 +123,7 @@ export const HeroEditor: React.FC = () => {
             value={hero?.cta_url || ""}
             onChange={(e) => updateHero({ cta_url: e.target.value })}
           />
+
         </div>
       </div>
     </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ExternalLink, Github, Mail } from 'lucide-react';
+import { ExternalLink, Github, Mail, Phone, MapPin } from 'lucide-react';
 import { usePortfolioStore } from '../../store/portfolioStore';
 import { Button } from '../ui/Button';
 
@@ -21,18 +21,14 @@ export const PortfolioPreview: React.FC = () => {
   const { hero, about, skills, projects, contact, theme } = portfolio;
 
   // Calculate dark mode background with opacity
-  const darkBgStyle =
-    theme?.mode === 'dark'
-      ? { backgroundColor: `rgba(17, 24, 39, ${theme.dark_opacity || 0.9})` }
-      : {};
-
+  const darkBgStyle = theme?.mode === 'dark' 
+    ? { backgroundColor: `rgba(17, 24, 39, ${theme.dark_opacity || 0.9})` }
+    : {};
   return (
-    <div
+    <div 
       className={`flex-1 overflow-y-auto ${theme?.mode === 'dark' ? '' : 'bg-white'}`}
-      style={{
-        ...(theme?.mode === 'dark' ? darkBgStyle : {}),
-        fontFamily: theme?.font_family,
-      }}
+      style={theme?.mode === 'dark' ? darkBgStyle : {}}
+      style={{ fontFamily: theme?.font_family }}
     >
       <div className="max-w-4xl mx-auto">
         {/* Profile Picture in Preview */}
@@ -47,11 +43,7 @@ export const PortfolioPreview: React.FC = () => {
         )}
 
         {/* Hero Section */}
-        <section
-          className={`py-20 px-6 text-center ${
-            theme?.mode === 'dark' ? 'text-white' : 'text-gray-900'
-          }`}
-        >
+        <section className={`py-20 px-6 text-center ${theme?.mode === 'dark' ? 'text-white' : 'text-gray-900'}`}>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -71,7 +63,7 @@ export const PortfolioPreview: React.FC = () => {
               {hero?.title || 'Your Professional Title'}
             </p>
             {hero?.cta_text && (
-              <Button
+              <Button 
                 style={{ backgroundColor: theme?.primary_color }}
                 className="text-white border-none"
               >
@@ -83,15 +75,9 @@ export const PortfolioPreview: React.FC = () => {
 
         {/* About Section */}
         {about?.bio && (
-          <section
-            className={`py-16 px-6 ${
-              theme?.mode === 'dark' ? 'text-white' : 'text-gray-900'
-            }`}
-          >
+          <section className={`py-16 px-6 ${theme?.mode === 'dark' ? 'text-white' : 'text-gray-900'}`}>
             <div className="max-w-3xl mx-auto">
-              <h2 className="text-3xl font-bold mb-8">
-                {hero?.about_title || 'About Me'}
-              </h2>
+              <h2 className="text-3xl font-bold mb-8">{hero?.about_title || 'About Me'}</h2>
               <div className="grid md:grid-cols-2 gap-8">
                 <div>
                   <p className="text-lg leading-relaxed mb-6 opacity-90">
@@ -104,7 +90,7 @@ export const PortfolioPreview: React.FC = () => {
                     </div>
                   )}
                 </div>
-
+                
                 {/* Skills */}
                 {skills?.skills && skills.skills.length > 0 && (
                   <div>
@@ -118,9 +104,7 @@ export const PortfolioPreview: React.FC = () => {
                         }, {} as Record<string, string[]>)
                       ).map(([category, skillList]) => (
                         <div key={category}>
-                          <h4 className="text-sm font-medium opacity-70 mb-1">
-                            {category}
-                          </h4>
+                          <h4 className="text-sm font-medium opacity-70 mb-1">{category}</h4>
                           <div className="flex flex-wrap gap-2">
                             {skillList.map((skill, index) => (
                               <span
@@ -143,11 +127,7 @@ export const PortfolioPreview: React.FC = () => {
 
         {/* Projects Section */}
         {projects?.projects && projects.projects.length > 0 && (
-          <section
-            className={`py-16 px-6 ${
-              theme?.mode === 'dark' ? 'text-white' : 'text-gray-900'
-            }`}
-          >
+          <section className={`py-16 px-6 ${theme?.mode === 'dark' ? 'text-white' : 'text-gray-900'}`}>
             <div className="max-w-6xl mx-auto">
               <h2 className="text-3xl font-bold mb-12 text-center">Projects</h2>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -158,15 +138,7 @@ export const PortfolioPreview: React.FC = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
                     className="rounded-xl overflow-hidden shadow-lg bg-white"
-                    style={
-                      theme?.mode === 'dark'
-                        ? {
-                            backgroundColor: `rgba(31, 41, 55, ${
-                              (theme.dark_opacity || 0.9) * 0.8
-                            })`,
-                          }
-                        : {}
-                    }
+                    style={theme?.mode === 'dark' ? { backgroundColor: `rgba(31, 41, 55, ${(theme.dark_opacity || 0.9) * 0.8})` } : {}}
                   >
                     {(project.image_url || project.video_url) && (
                       <div className="w-full h-48 overflow-hidden">
@@ -187,11 +159,9 @@ export const PortfolioPreview: React.FC = () => {
                       </div>
                     )}
                     <div className="p-6">
-                      <h3 className="font-bold text-xl mb-2">
-                        {project.title}
-                      </h3>
+                      <h3 className="font-bold text-xl mb-2">{project.title}</h3>
                       <p className="opacity-90 mb-4">{project.description}</p>
-
+                      
                       {project.tech_stack.length > 0 && (
                         <div className="flex flex-wrap gap-2 mb-4">
                           {project.tech_stack.map((tech, techIndex) => (
@@ -204,7 +174,7 @@ export const PortfolioPreview: React.FC = () => {
                           ))}
                         </div>
                       )}
-
+                      
                       <div className="flex space-x-4">
                         {project.live_url && (
                           <a
@@ -238,18 +208,13 @@ export const PortfolioPreview: React.FC = () => {
         )}
 
         {/* Contact Section */}
-        <section
-          className={`py-16 px-6 ${
-            theme?.mode === 'dark' ? 'text-white' : 'text-gray-900'
-          }`}
-        >
+        <section className={`py-16 px-6 ${theme?.mode === 'dark' ? 'text-white' : 'text-gray-900'}`}>
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-3xl font-bold mb-8">Contact</h2>
             <p className="text-lg mb-8 opacity-90">
-              I'm currently available for freelance work. Get in touch with me
-              via email or through social media.
+              I'm currently available for freelance work. Get in touch with me via email or through social media.
             </p>
-
+            
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-8">
               {contact?.email && (
                 <a
@@ -259,6 +224,16 @@ export const PortfolioPreview: React.FC = () => {
                 >
                   <Mail className="w-5 h-5" />
                   <span>{contact.email}</span>
+                </a>
+              )}
+              {contact?.phone && (
+                <a
+                  href={`tel:${contact.phone}`}
+                  className="flex items-center space-x-2 text-lg hover:opacity-75 transition-opacity"
+                  style={{ color: theme?.primary_color }}
+                >
+                  <Phone className="w-5 h-5" />
+                  <span>{contact.phone}</span>
                 </a>
               )}
             </div>
@@ -284,14 +259,12 @@ export const PortfolioPreview: React.FC = () => {
         </section>
 
         {/* Footer */}
-        <footer
-          className={`py-8 px-6 text-center border-t ${
-            theme?.mode === 'dark'
-              ? 'border-gray-800 text-gray-400'
-              : 'border-gray-200 text-gray-600'
-          }`}
-        >
-          <p>&copy; 2024 {hero?.name || 'Your Name'}. All rights reserved.</p>
+        <footer className={`py-8 px-6 text-center border-t ${
+          theme?.mode === 'dark' 
+            ? 'border-gray-800 text-gray-400' 
+            : 'border-gray-200 text-gray-600'
+        }`}>
+          <p>&copy; 2025 {hero?.name || 'Your Name'}. All rights reserved.</p>
         </footer>
       </div>
     </div>

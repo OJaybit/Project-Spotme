@@ -7,6 +7,7 @@ import { Input } from '../../components/ui/Input';
 import { Card } from '../../components/ui/Card';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '../../store/authStore';
+import { supabase } from '../../lib/supabase';
 
 export const Signup: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -24,20 +25,39 @@ export const Signup: React.FC = () => {
     setLoading(true);
 
     try {
-      // Simulate signup - create mock user
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const mockUser = {
-        id: Date.now().toString(),
+      const { data, error } = await supabase.auth.signUp({
         email: formData.email,
-        username: formData.username,
-        created_at: new Date().toISOString()
-      };
-      
-      setUser(mockUser);
+        password: formData.password,
+        options: {
+          data: {
+            username: formData.username
+          }
+        }
+      });
+
+      if (error) {
+        toast.error(error.message);
+        setLoading(false);
+        return;
+      }
+
+      if (!data.user) {
+        toast.error('Signup failed. Please try again.');
+        setLoading(false);
+        return;
+      }
+
+  setUser({
+  id: data.user.id,
+  email: data.user.email ?? '', // fallback if null
+  username: data.user.user_metadata?.username || formData.username,
+  created_at: data.user.created_at
+});
+
       toast.success('Account created successfully!');
       navigate('/editor');
-    } catch (error) {
+    } catch (err) {
+      console.error(err);
       toast.error('Signup failed. Please try again.');
     } finally {
       setLoading(false);
