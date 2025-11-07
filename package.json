@@ -1,23 +1,19 @@
 {
-  "name": "vite-react-typescript-starter",
+  "name": "project-spotme",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
-  "homepage": "https://Ojaybit.github.io/Project-Spotme",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
     "@supabase/supabase-js": "^2.58.0",
     "@types/react-router-dom": "^5.3.3",
     "framer-motion": "^12.23.6",
-    "gh-pages": "^6.3.0",
     "lucide-react": "^0.344.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
