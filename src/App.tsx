@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { Header } from './components/layout/Header';
 import { Footer } from './components/landing/Footer';
@@ -8,30 +8,36 @@ import { Login } from './pages/Auth/Login';
 import { Signup } from './pages/Auth/Signup';
 import { Dashboard } from './pages/Dashboard';
 import { Editor } from './pages/Editor';
-import { PublicPortfolio } from './pages/PublicPortfolio';
+import { PortfolioViewer } from './pages/PortfolioViewer';
+
+
+const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const location = useLocation();
+  const isPortfolioPage = location.pathname.startsWith('/p/');
+
+  return (
+    <div className="min-h-screen bg-white">
+      {!isPortfolioPage && <Header />}
+      <main>{children}</main>
+      {!isPortfolioPage && <Footer />}
+      <Toaster position="top-right" />
+    </div>
+  );
+};
 
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-white">
-        <Header />
-        <main>
-          <Routes>
-            <Route path="/" element={<Landing />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/editor" element={<Editor />} />
-            <Route path="/:username" element={<PublicPortfolio />} />
-          </Routes>
-        </main>
+      <Layout>
         <Routes>
-          <Route path="/:username" element={null} />
-          <Route path="/editor" element={null} />
-          <Route path="*" element={<Footer />} />
+          <Route path="/" element={<Landing />} />
+          <Route path="/login" element={<Login />} />
+         <Route path="/signup" element={<Signup />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/editor" element={<Editor />} />
+          <Route path="/p/:slug" element={<PortfolioViewer />} />
         </Routes>
-        <Toaster position="top-right" />
-      </div>
+      </Layout>
     </Router>
   );
 }
