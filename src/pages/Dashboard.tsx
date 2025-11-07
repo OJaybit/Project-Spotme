@@ -1,11 +1,56 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Plus, Edit, Eye, Globe, BarChart3, Settings } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
+import { supabase } from '../lib/supabase';
+import toast from 'react-hot-toast';
 
 export const Dashboard: React.FC = () => {
+  useEffect(() => {
+    const createPortfolioIfNotExists = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        toast.error('You must be logged in.');
+        return;
+      }
+
+      // Check if user already has a portfolio
+      const { data: existing, error: fetchError } = await supabase
+        .from('portfolios')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+
+      if (fetchError && fetchError.code !== 'PGRST116') {
+        console.error(fetchError);
+        return;
+      }
+
+      // If no portfolio exists, create one
+      if (!existing) {
+        const { error } = await supabase.from('portfolios').insert([
+          {
+            user_id: user.id,
+            name: `${user.user_metadata?.username || 'My'} Portfolio`,
+            description: 'My personal portfolio',
+          },
+        ]);
+
+        if (error) {
+          console.error(error);
+          toast.error('Failed to create portfolio.');
+        } else {
+          toast.success('Portfolio created successfully!');
+        }
+      }
+    };
+
+    createPortfolioIfNotExists();
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
