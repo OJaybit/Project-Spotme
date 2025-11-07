@@ -19,6 +19,7 @@ export const Signup: React.FC = () => {
   const navigate = useNavigate();
   const { setUser } = useAuthStore();
 
+  // 🧩 Handle Email/Password Signup
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -27,11 +28,22 @@ export const Signup: React.FC = () => {
       const { data, error } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
-        options: { data: { username: formData.username } }
+        options: {
+          data: { username: formData.username },
+          emailRedirectTo: `${window.location.origin}/auth/callback`, // 👈 added correctly here
+        },
       });
 
       if (error) throw error;
 
+      // ✅ Stop and prompt for email verification
+      if (data?.user && !data.user.confirmed_at) {
+        toast.success('Please check your email to confirm your account before signing in.');
+        setLoading(false);
+        return; // Don’t proceed until email is confirmed
+      }
+
+      // ✅ Proceed only if already confirmed (rarely immediate)
       setUser({
         id: data.user!.id,
         email: data.user!.email ?? '',
@@ -53,6 +65,7 @@ export const Signup: React.FC = () => {
     }
   };
 
+  // 🧩 Handle Google OAuth Signup
   const handleGoogleSignup = async () => {
     setLoading(true);
     const { error } = await supabase.auth.signInWithOAuth({
@@ -169,7 +182,7 @@ export const Signup: React.FC = () => {
           </button>
         </form>
 
-        {/* --- GOOGLE SIGNUP 
+        {/* --- GOOGLE SIGNUP --- */}
         <div className="mt-6 text-center text-gray-500">
           <span className="text-sm">or continue with</span>
           <div
@@ -179,7 +192,7 @@ export const Signup: React.FC = () => {
             <img src={googleIcon} alt="Google" className="w-5 h-5 mr-2" />
             <span className="text-gray-700">Sign up with Google</span>
           </div>
-        </div>--- */}
+        </div>
 
         {/* --- LOGIN LINK --- */}
         <p className="mt-6 text-center text-gray-500 text-sm">

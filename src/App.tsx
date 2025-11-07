@@ -9,7 +9,7 @@ import { Signup } from './pages/Auth/Signup';
 import { Dashboard } from './pages/Dashboard';
 import { Editor } from './pages/Editor';
 import { PortfolioViewer } from './pages/PortfolioViewer';
-
+import { Callback } from './pages/Auth/Callback';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
@@ -30,6 +30,7 @@ function App() {
     <Router>
       <Layout>
         <Routes>
+          <Route path="/auth/callback" element={<Callback />} />
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
          <Route path="/signup" element={<Signup />} />
