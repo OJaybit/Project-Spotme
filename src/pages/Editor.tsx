@@ -13,7 +13,6 @@ import { usePortfolioStore } from '../store/portfolioStore'
 import { useAuthStore } from '../store/authStore'
 import toast from 'react-hot-toast'
 
-// Correct imports — only these
 import { supabase } from '../lib/supabase'
 import slugify from '../lib/slugify'
 import { v4 as uuidv4 } from 'uuid'
@@ -32,8 +31,8 @@ export const Editor: React.FC = () => {
 
     if (!portfolio) {
       const defaultPortfolio = {
-        id: '1',
-user_id: user?.id && user.id.length === 36 ? user.id : uuidv4(),
+        id: uuidv4(),
+        user_id: user.id,
         username: user.username || 'user',
         hero: {
           name: '',
@@ -68,47 +67,112 @@ user_id: user?.id && user.id.length === 36 ? user.id : uuidv4(),
   }, [portfolio, user, setPortfolio, navigate])
 
   const handleSave = async () => {
+    if (!portfolio) return
     try {
       await new Promise(resolve => setTimeout(resolve, 1000))
       toast.success('Portfolio saved successfully!')
-    } catch (error) {
+    } catch {
       toast.error('Failed to save portfolio')
     }
   }
 
   const handlePublish = async () => {
-    if (!user || !portfolio) return toast.error('User not logged in')
+    try {
+      if (!user || !portfolio) {
+        toast.error('User not logged in')
+        return
+      }
 
-    const base = user?.username
-      ? slugify(user.username)
-      : slugify(portfolio.hero?.name || 'portfolio')
-    const candidate = base || `p-${uuidv4().slice(0, 8)}`
+      const base = user.username
+        ? slugify(user.username)
+        : slugify(portfolio.hero?.name || 'portfolio')
+      let slugCandidate = base || `p-${uuidv4().slice(0, 8)}`
 
-   const { data, error } = await supabase
-  .from('portfolios')
-  .upsert([
-    {
-      user_id: user?.id && user.id.length === 36 ? user.id : uuidv4(),
-      title: portfolio.hero?.title || 'My Portfolio',
-      content: portfolio, // no need to stringify; Supabase handles jsonb
-      slug: candidate,
-      published: true,
-      published_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    }
-  ])
-  .select('slug')
-  .single()
+      // 1) Check if this user already has a portfolio
+      const { data: existingForUser, error: existingUserErr } = await supabase
+        .from('portfolios')
+        .select('id, slug')
+        .eq('user_id', user.id)
+        .maybeSingle()
 
+      if (existingUserErr) {
+        console.error('Error checking user portfolio:', existingUserErr)
+        toast.error('Failed to publish portfolio')
+        return
+      }
 
-    if (error) {
-  console.error('Supabase error:', error.message, error.details)
-  toast.error('Failed to publish portfolio')
-}
- else {
-      setPortfolio({ ...portfolio, is_published: true })
+      // 2) Ensure slug is unique
+      const { data: slugConflict, error: slugErr } = await supabase
+        .from('portfolios')
+        .select('id')
+        .eq('slug', slugCandidate)
+        .maybeSingle()
+
+      if (slugErr) {
+        console.error('Error checking slug uniqueness:', slugErr)
+        toast.error('Failed to publish portfolio')
+        return
+      }
+
+      if (slugConflict && (!existingForUser || slugConflict.id !== existingForUser.id)) {
+        slugCandidate = `${slugCandidate}-${uuidv4().slice(0, 6)}`
+      }
+
+      const payload = {
+        user_id: user.id,
+        title: portfolio.hero?.title || 'My Portfolio',
+        content: portfolio,
+        slug: slugCandidate,
+        published: true,
+        published_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }
+
+      // 3a) Update existing portfolio
+      if (existingForUser?.id) {
+        const { data, error } = await supabase
+          .from('portfolios')
+          .update(payload)
+          .eq('id', existingForUser.id)
+          .select('slug')
+          .single()
+
+        if (error) {
+          console.error('Supabase update error:', error)
+          toast.error('Failed to publish portfolio')
+          return
+        }
+
+        setPortfolio({ ...portfolio, is_published: true })
+        toast.success('Portfolio updated and published!')
+        toast.success(`Your portfolio is live at ${window.location.origin}/p/${data.slug}`)
+        return
+      }
+
+      // 3b) Insert new portfolio
+      const newId = uuidv4()
+      const { data: insertData, error: insertErr } = await supabase
+        .from('portfolios')
+        .insert([{ id: newId, ...payload }])
+        .select('slug')
+        .single()
+
+      if (insertErr) {
+        console.error('Supabase insert error:', insertErr)
+        if (insertErr.code === '23505') {
+          toast.error('Slug conflict — please try again')
+        } else {
+          toast.error('Failed to publish portfolio')
+        }
+        return
+      }
+
+      setPortfolio({ ...portfolio, id: newId, is_published: true })
       toast.success('Portfolio published successfully!')
-      toast.success(`Your portfolio is live at ${window.location.origin}/p/${data.slug}`)
+      toast.success(`Your portfolio is live at ${window.location.origin}/p/${insertData.slug}`)
+    } catch (err) {
+      console.error('Unexpected publish error:', err)
+      toast.error('Failed to publish portfolio')
     }
   }
 
