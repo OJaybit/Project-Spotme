@@ -6,7 +6,7 @@ import { usePortfolioStore } from '../../../store/portfolioStore';
 
 const socialPlatforms = [
   { name: 'LinkedIn', icon: 'linkedin' },
-  { name: 'upwork', icon: 'upwork' },
+  { name: 'Upwork', icon: 'Upwork' },
   { name: 'GitHub', icon: 'github' },
   { name: 'Twitter', icon: 'twitter' },
   { name: 'Instagram', icon: 'instagram' },

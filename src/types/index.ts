@@ -27,7 +27,10 @@ export interface HeroSection {
   cta_text: string;
   cta_url?: string;
   about_title?: string;
+  avatar_size?: number;
+  avatar_shape?: 'circle' | 'square' | 'rounded';
 }
+
 
 export interface AboutSection {
   bio: string;
@@ -39,10 +42,13 @@ export interface SkillsSection {
 }
 
 export interface Skill {
+  id: string;
   name: string;
+  experience: string;
   icon?: string;
-  category: string;
+  category?: string;
 }
+
 
 export interface ProjectsSection {
   projects: Project[];
