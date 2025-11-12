@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+
 import { Header } from './components/layout/Header';
 import { Footer } from './components/landing/Footer';
 import { Landing } from './pages/Landing';
@@ -10,7 +11,9 @@ import { Dashboard } from './pages/Dashboard';
 import { Editor } from './pages/Editor';
 import { PortfolioViewer } from './pages/PortfolioViewer';
 import { Callback } from './pages/Auth/Callback';
+import { useAuthListener } from './utils/authListener';
 
+// ✅ Layout wrapper that hides header/footer for portfolio pages
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
   const isPortfolioPage = location.pathname.startsWith('/p/');
@@ -25,7 +28,11 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   );
 };
 
+// ✅ Single App component
 function App() {
+  // Listen for Supabase login/logout changes and restore session
+  useAuthListener();
+
   return (
     <Router>
       <Layout>
@@ -33,7 +40,7 @@ function App() {
           <Route path="/auth/callback" element={<Callback />} />
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
-         <Route path="/signup" element={<Signup />} />
+          <Route path="/signup" element={<Signup />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/editor" element={<Editor />} />
           <Route path="/p/:slug" element={<PortfolioViewer />} />

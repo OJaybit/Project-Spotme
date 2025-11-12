@@ -6,26 +6,33 @@ import { usePortfolioStore } from '../../../store/portfolioStore';
 
 const socialPlatforms = [
   { name: 'LinkedIn', icon: 'linkedin' },
-  { name: 'Upwork', icon: 'Upwork' },
+  { name: 'Upwork', icon: 'upwork' },
   { name: 'GitHub', icon: 'github' },
-  { name: 'Twitter', icon: 'twitter' },
+  { name: 'X', icon: 'x' },
   { name: 'Instagram', icon: 'instagram' },
   { name: 'Dribbble', icon: 'dribbble' },
   { name: 'Behance', icon: 'behance' },
 ];
+
 
 export const ContactEditor: React.FC = () => {
   const { portfolio, updateContact } = usePortfolioStore();
   const contact = portfolio?.contact;
   const [newSocial, setNewSocial] = useState({ platform: 'LinkedIn', url: '', icon: 'linkedin' });
 
-  const addSocialLink = () => {
-    if (newSocial.url.trim()) {
-      const updatedLinks = [...(contact?.social_links || []), newSocial];
-      updateContact({ social_links: updatedLinks });
-      setNewSocial({ platform: 'LinkedIn', url: '', icon: 'linkedin' });
-    }
-  };
+ const addSocialLink = () => {
+  if (newSocial.url.trim()) {
+    const platform = newSocial.platform.toLowerCase();
+    const updatedLinks = [...(contact?.social_links || []), {
+      ...newSocial,
+      platform,
+      icon: platform
+    }];
+    updateContact({ social_links: updatedLinks });
+    setNewSocial({ platform: 'linkedin', url: '', icon: 'linkedin' });
+  }
+};
+
 
   const removeSocialLink = (index: number) => {
     const updatedLinks = contact?.social_links?.filter((_, i) => i !== index) || [];
@@ -52,7 +59,7 @@ export const ContactEditor: React.FC = () => {
             value={contact?.email || ''}
             onChange={(e) => updateContact({ email: e.target.value })}
           />
-          
+
           <Input
             label="Phone Number (optional)"
             placeholder="+1 (555) 123-4567"

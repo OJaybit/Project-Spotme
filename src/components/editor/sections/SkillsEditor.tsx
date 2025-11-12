@@ -68,7 +68,7 @@ const allSkills = [
 
   // Other Miscellaneous Tools
   "Content Writing", "Copywriting", "SEO", "Social Media Management", "Marketing Automation", "Email Marketing", "Google Analytics",
-  "Data Analysis", "Growth Hacking", "Content Strategy", "Blog Writing", "Technical Writing", "Scriptwriting", "Brand Storytelling",
+  "Data Analysis", "Growth Hacking", "Content Strategy", "Blog Writing", "Technical Writing", "Scriptwriting", "Brand Storytelling", "Graphic Design",
   "Video Editing", "Final Cut Pro", "DaVinci Resolve", "Motion Capture", "Stop Motion", "Visual Effects (VFX)"
 ];
 

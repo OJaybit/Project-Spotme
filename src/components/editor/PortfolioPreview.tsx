@@ -202,11 +202,11 @@ export const PortfolioPreview: React.FC<PortfolioPreviewProps> = ({ data, readon
                 {contact.social_links.map((link: any, i: number) => {
                   const platform = link.platform.toLowerCase();
                   const iconMap: Record<string, JSX.Element> = {
-                    linkedin: <Linkedin className="w-6 h-6" />,
-                    x: <X className="w-6 h-6" />,
-                    github: <Github className="w-6 h-6" />,
-                    instagram: <Instagram className="w-6 h-6" />,
-                    dribbble: <Dribbble className="w-6 h-6" />,
+                    linkedin: <Linkedin className="w-6 h-6 text-white rounded-lg bg-blue-600" strokeWidth={1}/>,
+                    x: <X className="w- h-6 rounded-lg bg-black text-white rounded-halve" />,
+                    github: <Github className="w-6 h-6 bg-gray-500 rounded-lg" />,
+                    instagram: <Instagram className="w-6 h-6 rounded-lg bg-gradient-to-tr from-[#F58529] via-[#DD2A7B] to-[#515BD4]" />,
+                    dribbble: <Dribbble className="w-6 h-6 bg-[#EA4C89]" />,
                     behance: <BehanceIcon />,
                     upwork: <UpworkIcon />,
                   };

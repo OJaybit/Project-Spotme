@@ -30,7 +30,8 @@ export const Signup: React.FC = () => {
         password: formData.password,
         options: {
           data: { username: formData.username },
-          emailRedirectTo: `${window.location.origin}/auth/callback`, // 👈 added correctly here
+         emailRedirectTo: "https://project-spotme-l5lh.vercel.app/auth/callback",
+ // 👈 added correctly here
         },
       });
 
@@ -67,14 +68,18 @@ export const Signup: React.FC = () => {
 
   // 🧩 Handle Google OAuth Signup
   const handleGoogleSignup = async () => {
-    setLoading(true);
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: `${window.location.origin}/editor` }
-    });
-    if (error) toast.error(error.message);
-    setLoading(false);
-  };
+  setLoading(true);
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: `${window.location.origin}/auth/callback`, // front-end callback route
+    },
+  });
+
+  if (error) toast.error(error.message);
+  setLoading(false);
+};
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
